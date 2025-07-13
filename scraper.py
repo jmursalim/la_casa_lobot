@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
 
-load_dotenv
+load_dotenv()
 
 user_agent = os.getenv('USER_AGENT')
 accept_language = os.getenv('ACCEPT_LANGUAGE')
