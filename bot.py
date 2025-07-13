@@ -2,6 +2,12 @@ import discord
 from discord.ext import commands
 import random
 import scraper
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+token = os.getenv('TOKEN')
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -92,4 +98,4 @@ async def watchlist_pool(ctx, username_pool_spaced : str):
     except ValueError:
         await ctx.send('Invalid inputs')
 
-bot.run('MTM5Mzc0NTI0NTI5MTgwNjc3MQ.Gxbs8A.Ky37_OeUx6zyrvt1W3SnHokBLNC12gK-ATIgDo')
+bot.run(str(token))

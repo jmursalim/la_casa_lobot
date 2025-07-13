@@ -1,14 +1,19 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+import os
 
+load_dotenv
 
+user_agent = os.getenv('USER_AGENT')
+accept_language = os.getenv('ACCEPT_LANGUAGE')
 
 def get_movie_details(username: str, page_number) -> dict:
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8'
+        'User-Agent': user_agent,
+        'Accept-Language': accept_language
     }
     watchlist_url = f'https://letterboxd.com/{username}/watchlist/page/{page_number}/'
 

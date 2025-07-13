@@ -1,7 +1,7 @@
 # la_casa_lobot
 discord bot for my friends' and I's server
 
-Nothing fancy, just a little project to integrate some fun commands into our discord server
+Nothing fancy, just a little project to integrate some movie watchlist commands into our discord server
 these commands are as follows:
     watchlist username
         takes a letterboxd username and webscrapes for the watchlist of the user
