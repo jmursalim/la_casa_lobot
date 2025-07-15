@@ -4,6 +4,7 @@ import random
 import scraper
 from dotenv import load_dotenv
 import os
+import asyncio
 
 load_dotenv()
 
@@ -97,5 +98,36 @@ async def watchlist_pool(ctx, username_pool_spaced : str):
 
     except ValueError:
         await ctx.send('Invalid inputs')
+
+@bot.command()
+async def coinflip(ctx):
+    # - / | \
+    coin_animation = {
+        1 : '-',
+        2 : '/',
+        3 : '|',
+        0 : '\\'
+    }
+    coin_results = {
+        0:'Heads!',
+        1:'Tails!'
+    }
+
+    result = random.randint(0,1)
+
+    await ctx.send('Flipping coin:')
+    message = await ctx.send('-')
+    print('-')
+
+    #coin flip animation
+    for i in range(1,10):
+        frame = i % 4
+        await asyncio.sleep(0.2)
+        await message.edit(content=coin_animation[frame])
+        print(coin_animation[frame])
+
+    #send result of flip
+    await ctx.send(coin_results[result])
+
 
 bot.run(str(token))

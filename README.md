@@ -2,6 +2,7 @@
 discord bot for my friends' and I's server
 
 Nothing fancy, integrates some movie watchlist commands into our discord server
+The bot is being hosted on a digital ocean droplet
 
 the commands so far are:
 
@@ -20,3 +21,7 @@ webscrapes for the watchlist, then returns a random movie
 $random_watchlist_pool username1,username2,...
 
 webscrapes multiple users letterboxd watchlists then prints a random movie, ensuring no duplicates are present in the original watchlist
+
+$coinflip
+
+simple coinflip with a little animation to spice it up
