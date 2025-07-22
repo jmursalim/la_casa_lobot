@@ -25,3 +25,10 @@ webscrapes multiple users letterboxd watchlists then prints a random movie, ensu
 $coinflip
 
 simple coinflip with a little animation to spice it up
+
+Recommendation Commands:
+
+Currently working on some commands that integrate a recommendation algorithm to suggest a movie based on content filtering
+It will use the TMDB API to make a csv file containing a lot of movies.
+
+The miner.py file is what I used to make the csv file
