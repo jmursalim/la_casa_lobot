@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 import random
 import scraper
+from recommend import recommend_movie
 from dotenv import load_dotenv
 import os
 import asyncio
@@ -90,13 +91,13 @@ async def random_watchlist(ctx, username : str):
 
 # gives a random movie from the watchlist of multiple users
 # parameters: multiple letterboxd usernames
-# use: $random_watchlist_pool user1,user2,user3,...
+# use: $random_watchlist_pool user1 user2 user3 ...
 @bot.command()
-async def random_watchlist_pool(ctx, username_pool_spaced : str):
+async def random_watchlist_pool(ctx):
     try:
         #initialize variables
         total_watchlist = []
-        username_pool = username_pool_spaced.split(',')
+        username_pool = str(ctx.message.content).replace('$random_watchlist_pool ', '').split()
         
         # debugging
         # print(username_pool_spaced)
@@ -111,7 +112,7 @@ async def random_watchlist_pool(ctx, username_pool_spaced : str):
                 page_content = scraper.get_movie_details(username, page_number)
                 total_watchlist += page_content
                 page_number += 1
-                print(total_watchlist)
+                # print(total_watchlist)
 
         # choose a random movie
         movie = random.choice(list(set(total_watchlist)))
@@ -124,13 +125,13 @@ async def random_watchlist_pool(ctx, username_pool_spaced : str):
 
 # send the combined watchlist of multiple users
 # parameters: multiple letterboxd usernames
-# use: $watchlist_pool user1,user2,user3,...
+# use: $watchlist_pool user1 user2 user3 ...
 @bot.command()
 async def watchlist_pool(ctx, username_pool_spaced : str):
     try:
         # initialize variables
         total_watchlist = []
-        username_pool = username_pool_spaced.split(',')
+        username_pool = str(ctx.message.content).replace('$watchlist_pool ', '').split()
         
         # debugging
         # print(username_pool)
@@ -145,14 +146,14 @@ async def watchlist_pool(ctx, username_pool_spaced : str):
                 page_content = scraper.get_movie_details(username, page_number)
                 total_watchlist += page_content
                 page_number += 1
-                print(total_watchlist)
+                # print(total_watchlist)
 
         # change total watchlist from list to string
         total_watchlist = str(total_watchlist)
 
         # iterates the list so the discord message doesnt exceed the character limit
         if len(total_watchlist) > character_limit:
-            await ctx.send(f'the user {username}\'s watchlist is')
+            await ctx.send(f'the user {username_pool}\'s watchlist is')
             for character in range(0, len(total_watchlist), character_limit):
                 if character > len(total_watchlist):
                     await ctx.send(total_watchlist[character:len(total_watchlist)])
@@ -161,7 +162,7 @@ async def watchlist_pool(ctx, username_pool_spaced : str):
 
         else:
             # send movie as a message
-            await ctx.send(f'The user {username}\'s watchlist is \n{total_watchlist}')
+            await ctx.send(f'The user {username_pool}\'s watchlist is \n{total_watchlist}')
 
     except ValueError:
         await ctx.send('Invalid inputs')
@@ -197,5 +198,30 @@ async def coinflip(ctx):
     #send result of flip
     await ctx.send(coin_results[result])
 
+# recommend a movie
+# parameters: movie they want similar movies to, number of recommendations
+# use: $recommend movie_title,number_of_recommendations
+@bot.command()
+async def recommend(ctx):
+    try:
+        # handling the input message
+        message_list = str(ctx.message.content).replace('$recommend ', '').split(', ')
+        print(message_list)
+        movie_title = message_list[0]
+        number_of_recommendations = int(message_list[1])
+    
+        # get movie recommendations
+        recommendation_list = recommend_movie(movie_title, number_of_recommendations)
+
+        # send message to chat
+        await ctx.send(f'Movie recommendations for {movie_title}:')
+        message = ''
+        for movie in recommendation_list:
+            message = message + movie + '\n'
+        print(message)
+        await ctx.send(message)
+
+    except Exception as e:
+        await ctx.send(f'Error occured: {e}')
 
 bot.run(str(token))
