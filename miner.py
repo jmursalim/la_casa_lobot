@@ -14,15 +14,36 @@ load_dotenv()
 tmdb.API_KEY = os.getenv('TMDB_API_KEY')
 tmdb.REQUESTS_TIMEOUT = 5
 tmdb.REQUESTS_SESSION = requests.Session()
-index = 0
+
+# constants
 columns = ['index', 'movie_id', 'title', 'genres', 'overview', 'keywords', 'runtime', 'origin_country', 'popularity', 'vote_count', 'vote_average', 'production_companies', 'release_date', 'budget', 'cast', 'director']
 main_cast = 4
 file = 'movie_db.csv'
+config_file = 'miner_config.txt'
 
-# run the miner through these ids
-start_id = 1
-end_id = 1030353
-init_file = 1
+# get the directory of the miner
+miner_dir = os.path.dirname(__file__)
+config_path = os.path.join(miner_dir, config_file)
+
+# get variables from config file
+config_vars = {}
+try:
+    with open(config_path, 'r') as f:
+        for line in f:
+            line = line.strip()  # Remove leading/trailing whitespace and newlines
+            if line and '=' in line:
+                key, value = line.split('=', 1)
+                config_vars[key.strip()] = value.strip()
+except FileNotFoundError:
+    print(f"Error: The file '{config_file}' was not found at '{config_path}'")
+except Exception as e:
+    print(f"An error occurred while reading the file: {e}")
+
+# update miner settings through the config
+start_id = int(config_vars.get('START_ID'))
+end_id = int(config_vars.get('END_ID'))
+init_file = int(config_vars.get('INIT_FILE'))
+index = int(config_vars.get('INDEX'))
 
 # initialize the csv file with the headers
 if init_file == 1:

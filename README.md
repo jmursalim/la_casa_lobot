@@ -28,6 +28,7 @@ simple coinflip with a little animation to spice it up
 
 Recommendation Commands:
 
-$recommend movie, number_of_recommendations
+Currently working on some commands that integrate a recommendation algorithm to suggest a movie based on content filtering
+It will use the TMDB API to make a csv file containing a lot of movies.
 
-provide recommendations for a movie, detailed explanation on this command in the other readme
+The miner.py file is what I used to make the csv file
