@@ -34,17 +34,17 @@ def get_movie_details(username: str, page_number) -> dict:
 
     try:
         # find poster-container class in html
-        posters = soup.find_all("li", class_="poster-container")
+        posters = soup.find("ul", {"class": "grid -p125 -scaled128"})
 
         # iterate through each poster
-        for poster in posters:
+        for item in posters.find_all("li", {"class": "griditem"}):
             
             # this div has the movie details
-            div = poster.find('div', class_='film-poster')
+            comp = item.find("div", {"class": "react-component"})
 
             # get the movie title from the alt text of the image
-            if div and div.find('img'):
-                title = div.find('img')['alt']
+            if comp:
+                title = comp.get("data-item-full-display-name")
                 movie_details.append(title)
                 
         return movie_details
