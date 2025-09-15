@@ -51,9 +51,9 @@ bot = MyClient()
 async def skip(interaction: discord.Interaction):
     if interaction.guild.voice_client and (interaction.guild.voice_client.is_playing() or interaction.guild.voice_client.is_paused()):
         interaction.guild.voice_client.stop()
-        await interaction.response.send_message("Skipped the current song.")
+        await interaction.response.send_message_message("Skipped the current song.")
     else:
-        await interaction.response.send_message("Not playing anything to skip.")
+        await interaction.response.send_message_message("Not playing anything to skip.")
 
 
 @bot.tree.command(name="pause", description="Pause the currently playing song.")
@@ -62,15 +62,15 @@ async def pause(interaction: discord.Interaction):
 
     # Check if the bot is in a voice channel
     if voice_client is None:
-        return await interaction.response.send_message("I'm not in a voice channel.")
+        return await interaction.response.send_message_message("I'm not in a voice channel.")
 
     # Check if something is actually playing
     if not voice_client.is_playing():
-        return await interaction.response.send_message("Nothing is currently playing.")
+        return await interaction.response.send_message_message("Nothing is currently playing.")
     
     # Pause the track
     voice_client.pause()
-    await interaction.response.send_message("Playback paused!")
+    await interaction.response.send_message_message("Playback paused!")
 
 
 @bot.tree.command(name="resume", description="Resume the currently paused song.")
@@ -79,15 +79,15 @@ async def resume(interaction: discord.Interaction):
 
     # Check if the bot is in a voice channel
     if voice_client is None:
-        return await interaction.response.send_message("I'm not in a voice channel.")
+        return await interaction.response.send_message_message("I'm not in a voice channel.")
 
     # Check if it's actually paused
     if not voice_client.is_paused():
-        return await interaction.response.send_message("I’m not paused right now.")
+        return await interaction.response.send_message_message("I’m not paused right now.")
     
     # Resume playback
     voice_client.resume()
-    await interaction.response.send_message("Playback resumed!")
+    await interaction.response.send_message_message("Playback resumed!")
 
 
 @bot.tree.command(name="stop", description="Stop playback and clear the queue.")
@@ -96,7 +96,7 @@ async def stop(interaction: discord.Interaction):
 
     # Check if the bot is in a voice channel
     if not voice_client or not voice_client.is_connected():
-        return await interaction.response.send_message("I'm not connected to any voice channel.")
+        return await interaction.response.send_message_message("I'm not connected to any voice channel.")
 
     # Clear the guild's queue
     guild_id_str = str(interaction.guild_id)
@@ -110,7 +110,7 @@ async def stop(interaction: discord.Interaction):
     # (Optional) Disconnect from the channel
     await voice_client.disconnect()
 
-    await interaction.response.send_message("Stopped playback and disconnected!")
+    await interaction.response.send_message_message("Stopped playback and disconnected!")
 
 
 @bot.tree.command(name="play", description="Play a song or add it to the queue.")
@@ -121,7 +121,7 @@ async def play(interaction: discord.Interaction, song_query: str):
     voice_channel = interaction.user.voice.channel
 
     if voice_channel is None:
-        await interaction.followup.send("You must be in a voice channel.")
+        await interaction.followup.send_message("You must be in a voice channel.")
         return
 
     voice_client = interaction.guild.voice_client
@@ -144,7 +144,7 @@ async def play(interaction: discord.Interaction, song_query: str):
     tracks = results.get("entries", [])
 
     if tracks is None:
-        await interaction.followup.send("No results found.")
+        await interaction.followup.send_message("No results found.")
         return
 
     first_track = tracks[0]
@@ -158,9 +158,9 @@ async def play(interaction: discord.Interaction, song_query: str):
     SONG_QUEUES[guild_id].append((audio_url, title))
 
     if voice_client.is_playing() or voice_client.is_paused():
-        await interaction.followup.send(f"Added to queue: **{title}**")
+        await interaction.followup.send_message(f"Added to queue: **{title}**")
     else:
-        await interaction.followup.send(f"Now playing: **{title}**")
+        await interaction.followup.send_message(f"Now playing: **{title}**")
         await play_next_song(voice_client, guild_id, interaction.channel)
 
 
@@ -182,7 +182,7 @@ async def play_next_song(voice_client, guild_id, channel):
             asyncio.run_coroutine_threadsafe(play_next_song(voice_client, guild_id, channel), bot.loop)
 
         voice_client.play(source, after=after_play)
-        asyncio.create_task(channel.send(f"Now playing: **{title}**"))
+        asyncio.create_task(channel.send_message(f"Now playing: **{title}**"))
     else:
         await voice_client.disconnect()
         SONG_QUEUES[guild_id] = deque()
@@ -190,7 +190,7 @@ async def play_next_song(voice_client, guild_id, channel):
 # hello command
 @bot.tree.command()
 async def hello(interaction: discord.Interaction):
-    await interaction.send('Hello world!')
+    await interaction.response.send_message('Hello world!')
 
 @bot.tree.command()
 async def command_list(interaction):
@@ -201,10 +201,10 @@ async def command_list(interaction):
               '$recommend *movie_title*, *number_of_recommendations*: prints a list of similar movies\n' \
               '$coinflip: flips a coin\n'
     
-    await interaction.send(message)
+    await interaction.response.send_message(message)
 
 
-# sends a letterboxd watchlist
+# send_messages a letterboxd watchlist
 # parameters: letterboxd username
 # use: $watchlist username
 @bot.tree.command(name='watchlist', description='Print the watchlist of a letterboxd user')
@@ -225,21 +225,21 @@ async def watchlist(interaction: discord.Interaction, username : str):
             total_watchlist += page_content
             page_number += 1
     except ValueError:
-        await interaction.send(f'Error: retrieving watchlist')
+        await interaction.response.send_message(f'Error: retrieving watchlist')
 
     # iterates the list so the discord message doesnt exceed the character limit
     total_watchlist = str(total_watchlist)
     if len(total_watchlist) > character_limit:
-        await interaction.send(f'the user {username}\'s watchlist is')
+        await interaction.response.send_message(f'the user {username}\'s watchlist is')
         for character in range(0, len(total_watchlist), character_limit):
             if character > len(total_watchlist):
-                await interaction.send(total_watchlist[character:len(total_watchlist)])
+                await interaction.followup.send(total_watchlist[character:len(total_watchlist)])
             else:
-                await interaction.send(total_watchlist[character:character+character_limit])
+                await interaction.followup.send(total_watchlist[character:character+character_limit])
 
-    # send the message if the message is under the character limit
+    # send_message the message if the message is under the character limit
     else:
-        await interaction.send(f'The user {username}\'s watchlist is \n{total_watchlist}')
+        await interaction.response.send_message(f'The user {username}\'s watchlist is \n{total_watchlist}')
 
 # gives a random movie from a letterboxd watchlist
 # parameters: letterboxd username
@@ -262,19 +262,19 @@ async def random_watchlist(interaction: discord.Interaction, username : str):
             total_watchlist += page_content
             page_number += 1
     except ValueError:
-        await interaction.send(f'Error: retrieving watchlist')
+        await interaction.response.send_message(f'Error: retrieving watchlist')
     # choose a random movie from the list
     movie = random.choice(total_watchlist)
 
-    # send message with the movie
-    await interaction.send(f'Random movie from {username}\'s watchlist is \n{movie}')
+    # send_message message with the movie
+    await interaction.response.send_message(f'Random movie from {username}\'s watchlist is \n{movie}')
 
 # gives a random movie from the watchlist of multiple users
 # parameters: multiple letterboxd usernames
 # use: $random_watchlist_pool user1 user2 user3 ...
 @bot.tree.command(name='random_watchlist_pool', description='Print a random movie from a pool of watchlists')
-@app_commands.describe(username_pool="Letterboxd usernames seperated by spaces")
-async def random_watchlist_pool(interaction: discord.Interaction, username_pool: str):
+@app_commands.describe(username_pool_delim="Letterboxd usernames seperated by spaces")
+async def random_watchlist_pool(interaction: discord.Interaction, username_pool_delim: str):
     """
     $random_watchlist_pool *letterboxd_username_1* *letterboxd_username_2* *...*: prints a random movie from the combined watchlists of multiple users
     """
@@ -286,38 +286,44 @@ async def random_watchlist_pool(interaction: discord.Interaction, username_pool:
         # print(username_pool_spaced)
         # print(username_pool)
 
+        username_pool = username_pool_delim.split(' ')
+
         # iterate through the watchlist pages of each user
         for username in username_pool:
             page_number = 1
 
-            while scraper.get_movie_details(username, page_number) != []:
-                print(f'Requesting page {page_number} of watchlist')
-                page_content = scraper.get_movie_details(username, page_number)
-                total_watchlist += page_content
-                page_number += 1
-                # print(total_watchlist)
+            try:
+                while scraper.get_movie_details(username, page_number) != []:
+                    print(f'Requesting page {page_number} of watchlist')
+                    page_content = scraper.get_movie_details(username, page_number)
+                    total_watchlist += page_content
+                    page_number += 1
+                    # print(total_watchlist)
+            except ValueError:
+                await interaction.response.send_message(f'Error: retrieving watchlist')
 
         # choose a random movie
         movie = random.choice(list(set(total_watchlist)))
 
-        # send movie as a message
-        await interaction.send(f'Random movie from {username_pool} watchlist is \n{movie}')
+        # send_message movie as a message
+        await interaction.response.send_message(f'Random movie from {username_pool} watchlist is \n{movie}')
 
     except ValueError:
-        await interaction.send('Error: invalid inputs')
+        await interaction.response.send_message('Error: invalid inputs')
 
-# send the combined watchlist of multiple users
+# send_message the combined watchlist of multiple users
 # parameters: multiple letterboxd usernames
 # use: $watchlist_pool user1 user2 user3 ...
 @bot.tree.command(name='watchlist_pool', description='Print the watchlists from a pool of users')
-async def watchlist_pool(interaction: discord.Interaction):
+@app_commands.describe(username_pool_delim="Letterboxd usernames seperated by spaces")
+async def watchlist_pool(interaction: discord.Interaction, username_pool_delim : str):
     """
     $watchlist_pool *letterboxd_username_1* *letterboxd_username_2* *...*: prints the combined watchlists of multiple users
     """
     try:
         # initialize variables
         total_watchlist = []
-        username_pool = str(interaction.message.content).replace('$watchlist_pool ', '').split()
+        username_pool = username_pool_delim.split(' ')
         
         # debugging
         # print(username_pool)
@@ -339,19 +345,19 @@ async def watchlist_pool(interaction: discord.Interaction):
 
         # iterates the list so the discord message doesnt exceed the character limit
         if len(total_watchlist) > character_limit:
-            await interaction.send(f'the user {username_pool}\'s watchlist is')
+            await interaction.response.send_message(f'the user {username_pool}\'s watchlist is')
             for character in range(0, len(total_watchlist), character_limit):
                 if character > len(total_watchlist):
-                    await interaction.send(total_watchlist[character:len(total_watchlist)])
+                    await interaction.followup.send(total_watchlist[character:len(total_watchlist)])
                 else:
-                    await interaction.send(total_watchlist[character:character+character_limit])
+                    await interaction.followup.send(total_watchlist[character:character+character_limit])
 
         else:
-            # send movie as a message
-            await interaction.send(f'The user {username_pool}\'s watchlist is \n{total_watchlist}')
+            # send_message movie as a message
+            await interaction.response.send_message(f'The user {username_pool}\'s watchlist is \n{total_watchlist}')
 
     except ValueError:
-        await interaction.send('Invalid inputs')
+        await interaction.response.send_message('Invalid inputs')
 
 # coinflip command outputs heads or tails
 @bot.tree.command(name='coinflip', description='flip a coin')
@@ -373,47 +379,42 @@ async def coinflip(interaction: discord.Interaction):
 
     result = random.randint(0,1)
 
-    await interaction.send('Flipping coin:')
-    message = await interaction.send('-')
+    await interaction.response.send_message('Flipping coin:')
+    message = await interaction.followup.send('-')
     print('-')
 
     #coin flip animation
     for i in range(1,10):
         frame = i % 4
         await asyncio.sleep(0.2)
-        await message.edit(content=coin_animation[frame])
+        await interaction.followup.edit_message(message_id=message.id, content=coin_animation[frame])
         print(coin_animation[frame])
 
-    #send result of flip
-    await interaction.send(coin_results[result])
+    #send_message result of flip
+    await interaction.followup.send(coin_results[result])
 
 # recommend a movie
 # parameters: movie they want similar movies to, number of recommendations
 # use: $recommend movie_title,number_of_recommendations
 @bot.tree.command(name="recommend", description="Recommend a movie")
-async def recommend(interaction: discord.Interaction):
+@app_commands.describe(movie_title="movie title", number_of_recommendations="number of recommendations")
+async def recommend(interaction: discord.Interaction, movie_title : str, number_of_recommendations: int):
     """
     $recommend *movie_title*, *number_of_recommendations*: prints a list of similar movies
     """
     try:
-        # handling the input message
-        message_list = str(interaction.message.content).replace('$recommend ', '').split(', ')
-        print(message_list)
-        movie_title = message_list[0]
-        number_of_recommendations = int(message_list[1])
-    
         # get movie recommendations
         recommendation_list = recommend_movie(movie_title, number_of_recommendations)
 
-        # send message to chat
-        await interaction.send(f'Movie recommendations for {movie_title}:')
+        # send_message message to chat
+        await interaction.response.send_message(f'Movie recommendations for {movie_title}:')
         message = ''
         for movie in recommendation_list:
             message = message + movie + '\n'
         print(message)
-        await interaction.send(message)
+        await interaction.followup.send(message)
 
     except Exception as e:
-        await interaction.send(f'Error occured: {e}')
+        await interaction.response.send_message(f'Error occured: {e}')
 
 bot.run(str(token))
