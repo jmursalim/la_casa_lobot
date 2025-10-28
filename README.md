@@ -29,7 +29,7 @@ Integrates commands into our discord server
 
 *recommend a list of movies*
 
-#### Voice Channel Commands
+### Voice Channel Commands
 
 **/play search_query**
 
@@ -50,3 +50,4 @@ Integrates commands into our discord server
 **/skip**
 
 *skip the current playing song*
+
