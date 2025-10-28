@@ -13,18 +13,19 @@ the commands so far are:
 
 *takes a list of letterboxd usernames separated by a comma and webscrapes for the watchlist of the users*
 
-**$random_watchlist username**
+**/random_watchlist username**
 
-*webscrapes for the watchlist, then returns a random movie*
+*webscrapes letterboxd for the watchlist, then returns a random movie*
 
-**$random_watchlist_pool username1,username2,...**
+**/random_watchlist_pool username1,username2,...**
 
 *webscrapes multiple users letterboxd watchlists then prints a random movie, ensuring no duplicates are present in the original watchlist*
 
-**$coinflip**
+**/coinflip**
 
 *simple coinflip with a little animation to spice it up*
 
 **/recommend movie_title number_of_movies**
+
 
 *recommend a list of movies*
