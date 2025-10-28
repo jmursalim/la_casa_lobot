@@ -1,9 +1,9 @@
 # la_casa_lobot
 discord bot for my friends' and I's server
 
-Integrates some movie watchlist commands into our discord server
+Integrates commands into our discord server
 
-the commands so far are:
+### Movie Commands
 
 **/watchlist username**
 
@@ -23,9 +23,30 @@ the commands so far are:
 
 **/coinflip**
 
-*simple coinflip with a little animation to spice it up*
+*coinflip with a simple animation*
 
 **/recommend movie_title number_of_movies**
 
-
 *recommend a list of movies*
+
+#### Voice Channel Commands
+
+**/play search_query**
+
+*plays a song from a youtube video using the search query*
+
+**/stop**
+
+*stops playback and clear song queue*
+
+**/resume**
+
+*resume the currently paused song*
+
+**/pause**
+
+*pause the current song*
+
+**/skip**
+
+*skip the current playing song*
