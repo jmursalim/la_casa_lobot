@@ -1,7 +1,9 @@
 # la_casa_lobot
 discord bot for my friends' and I's server
 
-Integrates commands into our discord server
+Integrates commands into our discord server,
+
+Wrote a movie recommendation engine to power the /recommend command
 
 ### Movie Commands
 
@@ -50,4 +52,5 @@ Integrates commands into our discord server
 **/skip**
 
 *skip the current playing song*
+
 
